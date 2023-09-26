@@ -1,29 +1,28 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import  {useEffect}  from 'react'
+import {useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { useDispatch,useSelector } from 'react-redux'
-import { getUser } from './redux/userSlice'
+import { deleteUser } from './redux/userSlice'
 const Users = () => {
-    const dispatch =useDispatch()
+    
     const users=useSelector(state => state.users.users)
-    useEffect(()=>{
-        const fetchData =async()=>{
-            try{
-                const response =await axios.get('http://localhost:3001');
-                dispatch(getUser(response.data));
-            }catch(err){
-                console.log(err)
-            }
-        }
-        fetchData();
-    },[])
+   const dispatch=useDispatch()
+    const handleDelete=(id)=>{
+      axios.delete('http://localhost:3001/deleteuser/'+id)
+      .then(res=>{
+        dispatch(deleteUser({id}))
+        
+
+      }).catch(err=>console.log(err))
+    }
+
   return (
      <div className="d-flex vh-100 vw-100  bg-primary justify-content-center align-items-center" >
       <div className="w-250 bg-white rounded p-3">
-        <button  className="btn btn-success btn-sm">
+        <Link to="/create" className="btn btn-success btn-sm">
           Add +
-        </button>
+        </Link>
         <table className="table">
           <thead>
             <tr>
@@ -40,8 +39,8 @@ const Users = () => {
                         <td>{user.email}</td>
                         <td>{user.age}</td>
                         <td>
-                            <button  className="btn btn-sm btn-success me-2">Update</button>
-                            <button  className="btn btn-sm btn-danger">Delete</button>
+                            <Link to={`/edit/${user.id}`}  className="btn btn-sm btn-success me-2">Update</Link>
+                            <button onClick={()=>handleDelete(user.id)} className="btn btn-sm btn-danger">Delete</button>
                         </td>
                     </tr>
                 })
